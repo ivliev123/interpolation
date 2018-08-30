@@ -1,8 +1,4 @@
 
-int num_x = 10; // размер массива
-int num_y = 10;
-
-int **k_abcd;
 
 float points[][2]={{1,2},{2,4},{3,5},{4,7},{5,3}};
 int num;
@@ -26,15 +22,7 @@ void setup(){
   num=sizeof(points)/sizeof(float)/2; //количество элементов массива points
   x = new float [num];
   y = new float [num];
-  k_abcd = new int* [num_x]; // Создание строк массива
-  for(int count = 0; count < num_x; count++){
-    k_abcd[count] = new int [num_y];
-  }
 
-  Serial.println(num);
-}
-
-void loop(){
   int  N = sizeof(points)/sizeof(float)/2 - 1;
 
   h = new float [N];
@@ -49,8 +37,12 @@ void loop(){
   c[0] = 0;
   c[N] = 0;
 
+}
 
+void loop(){
 
+  int  N = sizeof(points)/sizeof(float)/2 - 1;
+  
   for(int i=0; i<num; i++){
     x[i]=points[i][0];
     y[i]=points[i][1];
@@ -74,17 +66,16 @@ void loop(){
         d[i] = (c[i] - c[i-1]) / (3 * h[i]);
         b[i] = l[i] + (2 * c[i] * h[i] + h[i] * c[i-1]) / 3;
         a[i] = y[i];
+      }
+      
+
+    for(int i=1; i<N+1; i++ ){
         Serial.println(a[i]);
         Serial.println(b[i]);
         Serial.println(c[i]);
         Serial.println(d[i]);
         Serial.println();
       }
-//    for(int j=0; j<2; j++){
-//    //заплнение массива
-//    k_abcd[i][j] = square(i*10+j);
-//    }
-
 
 
 
@@ -99,6 +90,6 @@ void loop(){
 
   Serial.println(  );
 
-  delay(30000);
+  delay(100);
 }
 
