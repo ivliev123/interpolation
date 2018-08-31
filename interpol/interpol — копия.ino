@@ -1,7 +1,6 @@
 
-float **points;
 
-float pxy[][2]={{1,2},{2,4},{3,5},{4,7},{5,3}};
+float points[][2]={{1,2},{2,4},{3,5},{4,7},{5,3}};
 
 int num;
 
@@ -21,11 +20,11 @@ int num;
 
 void setup(){
   Serial.begin(9600);
-  num=sizeof(pxy)/sizeof(float)/2; //количество элементов массива points
+  num=sizeof(points)/sizeof(float)/2; //количество элементов массива points
   x = new float [num];
   y = new float [num];
 
-  int  N = sizeof(pxy)/sizeof(float)/2 - 1;
+  int  N = sizeof(points)/sizeof(float)/2 - 1;
 
   h = new float [N];
   l = new float [N];
@@ -39,30 +38,17 @@ void setup(){
   c[0] = 0;
   c[N] = 0;
 
-  points = new float *[num];  // создание строк массива который будет параметром функции spline
-  for (int i=0; i<num; i++){
-    points[i] = new float [2]; //создание 2-х столбцов для xy
-  }
-
-
 }
 
 void loop(){
-
-  //
-  for(int i=0; i<num; i++){
-    points[i][0]=pxy[i][0];
-    points[i][1]=pxy[i][1];
-  }
     
-  spline(points);
+  spline();
   delay(1000);
 }
 
 
-void spline(float **points){
+void spline(){
   int  N = sizeof(points)/sizeof(float)/2 - 1;
-  num=sizeof(points)/sizeof(float)/2;
   
   for(int i=0; i<num; i++){
     x[i]=points[i][0];

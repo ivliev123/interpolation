@@ -39,30 +39,43 @@ void setup(){
   c[0] = 0;
   c[N] = 0;
 
-  points = new float *[num];  // создание строк массива который будет параметром функции spline
-  for (int i=0; i<num; i++){
-    points[i] = new float [2]; //создание 2-х столбцов для xy
-  }
-
-
+//  int n =  sizeof(pxy)/sizeof(float)/2;
+// 
+//  points = new float*[n];  // создание строк массива который будет параметром функции spline
+//  for (int i=0; i<n; i++){
+//    points[i] = new float[2]; //создание 2-х столбцов для xy
+//  }
 }
 
 void loop(){
 
   //
-  for(int i=0; i<num; i++){
+  int n =  sizeof(pxy)/sizeof(float)/2;
+ // float **points;
+  points = new float*[n];  // создание строк массива который будет параметром функции spline
+  for (int i=0; i<n; i++){
+    points[i] = new float[2]; //создание 2-х столбцов для xy
+  }
+  
+  for(int i=0; i<n; i++){
     points[i][0]=pxy[i][0];
     points[i][1]=pxy[i][1];
   }
-    
-  spline(points);
-  delay(1000);
+  spline(points,n);  //записывае и выводит в serial значения коэфициентов
+
+  
+  for(int i=0; i<n; i++){
+    delete[]points[i];
+  }
+  delete[]points;
+  delay(100);
 }
 
 
-void spline(float **points){
-  int  N = sizeof(points)/sizeof(float)/2 - 1;
-  num=sizeof(points)/sizeof(float)/2;
+void spline(float **points,int num){
+  //int  N = sizeof(points)/sizeof(float)/2 - 1;
+  //num=sizeof(points)/sizeof(float)/2;
+  int  N = num - 1;
   
   for(int i=0; i<num; i++){
     x[i]=points[i][0];
@@ -97,5 +110,7 @@ void spline(float **points){
         Serial.println(d[i]);
         Serial.println();
       }
+
+     
 }
 
