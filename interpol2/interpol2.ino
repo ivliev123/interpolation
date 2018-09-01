@@ -11,6 +11,11 @@ int n[4][4]={{2675,2350,1905,1550},
         {1405,1345,1260,1140},
         {800,770,730,685}};
 
+float ***n_p_abcd;
+float ***p_n_abcd;
+float ***n_q_abcd;
+float ***q_p_abcd;
+
 float U[]={7.5,6.86,4.58,2.26};
 
 float **points;
@@ -37,7 +42,7 @@ void setup(){
   //int nn =  sizeof(n)/sizeof(int)/(sizeof(n[0])/sizeof(int));
   //Serial.println(nn);
   
-  num=sizeof(pxy)/sizeof(float)/2; //количество элементов массива points
+  int num =  sizeof(q)/sizeof(float)/(sizeof(q[0])/sizeof(float));
   x = new float [num];
   y = new float [num];
 
@@ -55,11 +60,28 @@ void setup(){
   c[0] = 0;
   c[N] = 0;
 
-  int num =  sizeof(q)/sizeof(int)/(sizeof(q[0])/sizeof(int));
+  
  
   points = new float*[num];  // создание строк массива который будет параметром функции spline
+  n_p_abcd = new float**[num];
+  p_n_abcd = new float**[num];
+  n_q_abcd = new float**[num];
+  q_p_abcd = new float**[num];
+  for (int i=0; i<num; i++){
+    n_p_abcd[i] = new float*[num-1];
+    p_n_abcd[i] = new float*[num-1];
+    n_q_abcd[i] = new float*[num-1];
+    q_p_abcd[i] = new float*[num-1];
+ for (int j=0; j<num; j++){
+    n_p_abcd[i][j] = new float[4];
+    p_n_abcd[i][j] = new float[4];
+    n_q_abcd[i][j] = new float[4];
+    q_p_abcd[i][j] = new float[4];
+ }
+  }
   for (int i=0; i<num; i++){
     points[i] = new float[2]; //создание 2-х столбцов для xy
+
   }
 }
 
@@ -74,52 +96,46 @@ void loop(){
 //  }
 
 
-// интерполяция P(Q)
+
 int nni =  sizeof(q)/sizeof(int)/(sizeof(q[0])/sizeof(int));
 int nnj =  sizeof(q[0])/sizeof(int);
-Serial.println(nni);
+// интерполяция P(Q)
   for(int i=0; i<nni; i++){
   for(int j=0; j<nnj; j++){
     points[j][0]=q[i][j];
     points[j][1]=p[i][j];
   }
-  spline(points,nnj);  //записывае и выводит в serial значения коэфициентов
+  spline(points,nnj,q_p_abcd, i);  //записывае и выводит в serial значения коэфициентов
   }
 Serial.println();
 
  // интерполяция P(N)
-//nni =  sizeof(n)/sizeof(int)/(sizeof(n[0])/sizeof(int));
-//nnj =  sizeof(n[0])/sizeof(int);
   for(int i=0; i<nni; i++){
   for(int j=0; j<nnj; j++){
     points[j][0]=n[i][j];
     points[j][1]=p[i][j];
   }
-  spline(points,nnj);  //записывае и выводит в serial значения коэфициентов 
+  spline(points,nnj,n_p_abcd, i);  //записывае и выводит в serial значения коэфициентов 
   } 
 Serial.println();
   
 // интерполяция N(P)
-//nni =  sizeof(p)/sizeof(int)/(sizeof(p[0])/sizeof(int));
-//nnj =  sizeof(p[0])/sizeof(int);
   for(int i=0; i<nni; i++){
   for(int j=0; j<nnj; j++){
     points[j][0]=p[i][j];
     points[j][1]=n[i][j];
   }
-  spline(points,nnj);  //записывае и выводит в serial значения коэфициентов 
+  spline(points, nnj, p_n_abcd, i);  //записывае и выводит в serial значения коэфициентов 
   }
 Serial.println();
 
 // интерполяция Q(N)
-//nni =  sizeof(n)/sizeof(int)/(sizeof(n[0])/sizeof(int));
-//nnj =  sizeof(n[0])/sizeof(int);
   for(int i=0; i<nni; i++){
   for(int j=0; j<nnj; j++){
     points[j][0]=n[i][j];
     points[j][1]=q[i][j];
   }
-  spline(points,nnj);  //записывае и выводит в serial значения коэфициентов
+  spline(points,nnj,n_q_abcd,i);  //записывае и выводит в serial значения коэфициентов
   }
 Serial.println();
 
@@ -129,11 +145,32 @@ Serial.println();
 //    delete[]points[i];
 //  }
 //  delete[]points;
-  delay(500);
+  
+
+
+for(int k=0; k<4; k++){
+  for(int i=1; i<4; i++){
+    Serial.println();
+      for(int j=0; j<4; j++){
+        Serial.print(q_p_abcd[k][i][j]);
+        Serial.print("  ");
+        
+      }
+  }
+  Serial.println();
+}
+  delay(100);
 }
 
 
-void spline(float **points,int num){
+
+
+
+
+
+
+
+void spline(float **points,int num, float ***k_abcd, int nl ){   // nl номер кривой из симейства кривых
   //int  N = sizeof(points)/sizeof(float)/2 - 1;
   //num=sizeof(points)/sizeof(float)/2;
   int  N = num - 1;
@@ -164,6 +201,10 @@ void spline(float **points,int num){
       }
       
     for(int i=1; i<N+1; i++ ){
+      k_abcd[nl][i][0]=a[i];
+      k_abcd[nl][i][1]=b[i];
+      k_abcd[nl][i][2]=c[i];
+      k_abcd[nl][i][3]=d[i];
         Serial.print(a[i]);
         Serial.print("  ");
         Serial.print(b[i]);
