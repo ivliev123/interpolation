@@ -90,6 +90,7 @@ def spline(points):
 
 #для работы с графиками
 fig = plt.figure()
+ax1 = fig.add_subplot(111)
 print (fig.axes)
 print (type(fig))
 
@@ -131,5 +132,7 @@ for i in range(len(q_p)):
 
         plt.plot(T, y1)
 
+ax1.set_xlabel('Q')
+ax1.set_ylabel('P')
 fig.savefig('all_q_p.png')
 plt.show()
