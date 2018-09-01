@@ -30,19 +30,19 @@ float pxy[][2]={{1,2},{2,4},{3,5},{4,7},{5,3}};
   float  *l;
   float  *delta;
   float  *_lambda;
-  
+
   float  *c;
   float  *a;
   float  *d;
   float  *b;
 
 int flag=1;
-  
+
 void setup(){
   Serial.begin(9600);
   //int nn =  sizeof(n)/sizeof(int)/(sizeof(n[0])/sizeof(int));
   //Serial.println(nn);
-  
+
   int num =  sizeof(q)/sizeof(float)/(sizeof(q[0])/sizeof(float));
   x = new float [num];
   y = new float [num];
@@ -61,8 +61,8 @@ void setup(){
   c[0] = 0;
   c[N] = 0;
 
-  
- 
+
+
   points = new float*[num];  // создание строк массива который будет параметром функции spline
   n_p_abcd = new float**[num];
   p_n_abcd = new float**[num];
@@ -109,17 +109,17 @@ Serial.println();
     points[j][0]=n[i][j];
     points[j][1]=p[i][j];
   }
-  spline(points,nnj,n_p_abcd, i);  //записывае и выводит в serial значения коэфициентов 
-  } 
+  spline(points,nnj,n_p_abcd, i);  //записывае и выводит в serial значения коэфициентов
+  }
 Serial.println();
-  
+
 // интерполяция N(P)
   for(int i=0; i<nni; i++){
   for(int j=0; j<nnj; j++){
     points[j][0]=p[i][j];
     points[j][1]=n[i][j];
   }
-  spline(points, nnj, p_n_abcd, i);  //записывае и выводит в serial значения коэфициентов 
+  spline(points, nnj, p_n_abcd, i);  //записывае и выводит в serial значения коэфициентов
   }
 Serial.println();
 
@@ -131,7 +131,7 @@ Serial.println();
   }
   spline(points,nnj,n_q_abcd,i);  //записывае и выводит в serial значения коэфициентов
   }
-  
+
 Serial.println();
   flag=0;
 }
@@ -142,7 +142,7 @@ for(int k=0; k<4; k++){
       for(int j=0; j<4; j++){
         Serial.print(q_p_abcd[k][i][j]);
         Serial.print("  ");
-        
+
       }
   }
   Serial.println();
@@ -157,7 +157,7 @@ void spline(float **points,int num, float ***k_abcd, int nl ){   // nl номе�
   //int  N = sizeof(points)/sizeof(float)/2 - 1;
   //num=sizeof(points)/sizeof(float)/2;
   int  N = num - 1;
-  
+
   for(int i=0; i<num; i++){
     x[i]=points[i][0];
     y[i]=points[i][1];
@@ -182,7 +182,7 @@ void spline(float **points,int num, float ***k_abcd, int nl ){   // nl номе�
         b[i] = l[i] + (2 * c[i] * h[i] + h[i] * c[i-1]) / 3;
         a[i] = y[i];
       }
-      
+
     for(int i=1; i<N+1; i++ ){
       k_abcd[nl][i][0]=a[i];
       k_abcd[nl][i][1]=b[i];
@@ -199,6 +199,5 @@ void spline(float **points,int num, float ***k_abcd, int nl ){   // nl номе�
         Serial.println();
       }
 
-     
-}
 
+}
