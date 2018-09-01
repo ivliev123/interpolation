@@ -97,32 +97,19 @@ for i in range(len(q)):
     plt.scatter(q[i],p[i])
 
 
-qp=get_points(q,p)
+#qp=get_points(q,p)
+n_p=get_points(n,p)
+p_n=get_points(p,n)
+n_q=get_points(n,q)
+q_p=get_points(q,p)
 
 
-namber=2
-Q=500
-t1,t2=diapazon(q,Q,namber)
-
-x=q[namber]
-xi_1=x[t1]
-xi=x[t2]
-
-ai=qp[namber][0][t2]
-bi=qp[namber][1][t2]
-ci=qp[namber][2][t2]
-di=qp[namber][3][t2]
-
-y1=ai+bi*(Q-xi)+ci*(Q-xi)**2+di*(Q-xi)**3
-plt.scatter(Q,y1)
 
 #points[][2]={{1,2},{2,4},{3,5},{4,7},{5,3}};
 
-points=[[1,2],[2,4],[3,5],[4,7],[5,3]]
-a, b, c, d=spline(points)
-print(a,b,c,d)
 
-for i in range(len(qp)):
+
+for i in range(len(q_p)):
 
     #a, b, c, d=spline(points[i])
     x = q[i]
@@ -130,10 +117,10 @@ for i in range(len(qp)):
         xi_1=x[k-1]
         xi=x[k]
 
-        ai=qp[i][0][k]
-        bi=qp[i][1][k]
-        ci=qp[i][2][k]
-        di=qp[i][3][k]
+        ai=q_p[i][0][k]
+        bi=q_p[i][1][k]
+        ci=q_p[i][2][k]
+        di=q_p[i][3][k]
 
         #T=np.arange(xi_1,xi+0.1,0.1)
         T=np.arange(xi_1,xi+0.1,0.1)
@@ -144,4 +131,5 @@ for i in range(len(qp)):
 
         plt.plot(T, y1)
 
+fig.savefig('all_q_p.png')
 plt.show()
