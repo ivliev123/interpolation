@@ -36,6 +36,7 @@ float pxy[][2]={{1,2},{2,4},{3,5},{4,7},{5,3}};
   float  *d;
   float  *b;
 
+int flag=1;
   
 void setup(){
   Serial.begin(9600);
@@ -87,18 +88,11 @@ void setup(){
 
 void loop(){
 
-  //
-//int n =  sizeof(pxy)/sizeof(float)/2;
-//закоментировано потому что засоряет память //обьявлена 1 раз в setup
-//  points = new float*[n];  // создание строк массива который будет параметром функции spline
-//  for (int i=0; i<n; i++){
-//    points[i] = new float[2]; //создание 2-х столбцов для xy
-//  }
-
-
+if (flag == 1){
 
 int nni =  sizeof(q)/sizeof(int)/(sizeof(q[0])/sizeof(int));
 int nnj =  sizeof(q[0])/sizeof(int);
+
 // интерполяция P(Q)
   for(int i=0; i<nni; i++){
   for(int j=0; j<nnj; j++){
@@ -137,16 +131,10 @@ Serial.println();
   }
   spline(points,nnj,n_q_abcd,i);  //записывае и выводит в serial значения коэфициентов
   }
-Serial.println();
-
-
-//закоментировано потому что не очищает всю память  
-//  for(int i=0; i<n; i++){
-//    delete[]points[i];
-//  }
-//  delete[]points;
   
-
+Serial.println();
+  flag=0;
+}
 
 for(int k=0; k<4; k++){
   for(int i=1; i<4; i++){
@@ -159,13 +147,8 @@ for(int k=0; k<4; k++){
   }
   Serial.println();
 }
-  delay(100);
+  delay(1000);
 }
-
-
-
-
-
 
 
 
