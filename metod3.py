@@ -142,7 +142,7 @@ p_n=get_points(p,n)
 n_q=get_points(n,q)
 q_p=get_points(q,p)
 
-figure(n_p,n)
+figure(p_n,p)
 
 #поиск статистического давления, указав кривую и условно считав обороты
 namber=3
@@ -150,7 +150,11 @@ N=740
 P=find_points(namber,n,n_p,N)
 
 
-plt.scatter(N,P)
+for i in range(len(p_n)):
+    if p[i][0]>P:
+        N = find_points(i,p,p_n,P)
+
+        plt.scatter(P,N)
 
 
 fig.savefig(str(namber)+'_'+str(N)+'.png')
