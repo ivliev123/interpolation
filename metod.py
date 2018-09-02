@@ -95,7 +95,7 @@ print (fig.axes)
 print (type(fig))
 
 for i in range(len(q)):
-    plt.scatter(n[i],q[i])
+    plt.scatter(p[i],n[i])
 
 
 #qp=get_points(q,p)
@@ -110,18 +110,18 @@ q_p=get_points(q,p)
 
 
 
-for i in range(len(n_q)):
+for i in range(len(p_n)):
 
     #a, b, c, d=spline(points[i])
-    x = n[i]
+    x = p[i]
     for k in range(1,len(x)):
         xi_1=x[k-1]
         xi=x[k]
 
-        ai=n_q[i][0][k]
-        bi=n_q[i][1][k]
-        ci=n_q[i][2][k]
-        di=n_q[i][3][k]
+        ai=p_n[i][0][k]
+        bi=p_n[i][1][k]
+        ci=p_n[i][2][k]
+        di=p_n[i][3][k]
 
         #T=np.arange(xi_1,xi+0.1,0.1)
         T=np.arange(xi_1,xi+0.1,-0.1)
@@ -132,7 +132,7 @@ for i in range(len(n_q)):
 
         plt.plot(T, y1)
 
-ax1.set_xlabel('N')
-ax1.set_ylabel('Q')
-fig.savefig('all_n_q.png')
+ax1.set_xlabel('P')
+ax1.set_ylabel('N')
+fig.savefig('all_p_n.png')
 plt.show()
