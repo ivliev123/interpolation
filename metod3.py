@@ -121,19 +121,15 @@ def figure(x_y,x_all):
             #print(ai,bi,ci,di)
 
             #T=np.arange(xi_1,xi+0.1,0.1)
-            T=np.arange(xi_1,xi+0.1,0.1)
+            T=np.arange(xi_1,xi+0.1,-0.1)
             T2 = copy.deepcopy(T)
             for l in range(len(T)):
                 T2[l]=T2[l]-xi
             y=ai+bi*T2+ci*T2**2+di*T2**3
-            ax1.plot(T, y)
+            plt.plot(T, y)
 
 #для работы с графиками
-fig, (ax1, ax2) = plt.subplots(
-    nrows=1, ncols=2,
-    figsize=(10, 4)
-)
-
+fig = plt.figure()
 
 #for i in range(len(n)):
     #plt.scatter(n[i],p[i])
@@ -146,68 +142,16 @@ p_n=get_points(p,n)
 n_q=get_points(n,q)
 q_p=get_points(q,p)
 
-figure(q_p,q)
+figure(n_p,n)
 
 #поиск статистического давления, указав кривую и условно считав обороты
 namber=3
 N=740
 P=find_points(namber,n,n_p,N)
 
-ax1.plot([P]*1200)
-print(P)
-#plt.scatter(N,P)
 
-for i in range(len(p_n)):
-    if p[i][0]>P:
-        N = find_points(i,p,p_n,P)
-        N_array.append(N)
-        print(N,P)
-        #plt.scatter(N,P)
+plt.scatter(N,P)
 
-#for i in range(len(N_array)):
-        #Q = find_points(i,n,n_q,N_array[i])
-        Q = find_points(i,n,n_q,N)
-        Q_array.append(Q)
-        U_new.append(U[i])
-        ax2.scatter(U[i],Q)
-
-U_new.append(0)
-Q_array.append(0)
-
-
-
-
-
-points=[]
-UQ=[]
-for k in range(len(Q_array)):
-    points.append([U_new[k],Q_array[k]])
-
-print(points)
-a, b, c, d=spline(points)
-UQ.append([a, b, c, d])
-
-
-
-
-for k in range(1,len(U_new)):
-    xi_1=U_new[k-1]
-    xi=U_new[k]
-
-    ai=UQ[0][0][k]
-    bi=UQ[0][1][k]
-    ci=UQ[0][2][k]
-    di=UQ[0][3][k]
-    #print(ai,bi,ci,di)
-
-    #T=np.arange(xi_1,xi+0.1,0.1)
-    T=np.arange(xi_1,xi-0.1,-0.1)
-    T2 = copy.deepcopy(T)
-    for l in range(len(T)):
-        T2[l]=T2[l]-xi
-    y=ai+bi*T2+ci*T2**2+di*T2**3
-    ax2.plot(T, y)
-    fig.suptitle('Pconst = '+str(P), fontsize=16)
 
 fig.savefig(str(namber)+'_'+str(N)+'.png')
 plt.show()

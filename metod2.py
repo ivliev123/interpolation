@@ -147,12 +147,6 @@ n_q=get_points(n,q)
 q_p=get_points(q,p)
 
 print(q_p)
-print()
-print(n_p)
-print()
-print(p_n)
-print()
-print(n_q)
 figure(q_p,q)
 
 #поиск статистического давления, указав кривую и условно считав обороты
