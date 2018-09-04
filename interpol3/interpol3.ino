@@ -16,11 +16,8 @@ int n[4][4] = {{2675, 2350, 1905, 1550},
 
 float ***n_p_abcd;
 float ***p_n_abcd;
-//float ***n_q_abcd;
-//float ***q_p_abcd;
-
-float **kk_abcd;
-float **abcd;
+float ***n_q_abcd;
+float ***q_p_abcd;
 
 float U[] = {7.5, 6.86, 4.58, 2.26};
 
@@ -45,14 +42,15 @@ float  *b;
 int flag = 1;
 
 void setup() {
-
   Serial.begin(9600);
+  //int nn =  sizeof(n)/sizeof(int)/(sizeof(n[0])/sizeof(int));
+  //Serial.println(nn);
 
   int num =  sizeof(q) / sizeof(float) / (sizeof(q[0]) / sizeof(float));
   x = new float [num];
   y = new float [num];
 
-  Serial.println(num);
+
 
   h = new float [num];
   l = new float [num];
@@ -66,90 +64,100 @@ void setup() {
   c[0] = 0;
   c[num] = 0;
 
-  n_p_abcd = new float**[num];
-  p_n_abcd = new float**[num];
-//  n_q_abcd = new float**[num];
-//  q_p_abcd = new float**[num];
-  for (int i = 0; i < num; i++) {
-    n_p_abcd[i] = new float*[num];
-    p_n_abcd[i] = new float*[num];
-//    n_q_abcd[i] = new float*[num];
-//    q_p_abcd[i] = new float*[num];
-    for (int j = 0; j < num; j++) {
-      n_p_abcd[i][j] = new float[4];
-      p_n_abcd[i][j] = new float[4];
-//      n_q_abcd[i][j] = new float[4];
-//      q_p_abcd[i][j] = new float[4];
-    }
-  }
 
 
   points = new float*[num];  // создание строк массива который будет параметром функции spline
-  kk_abcd = new float*[num]; //создаем двухмерный массив строки- сплайны, столбцы коэффициенты
-  abcd = new float*[num];
-
+  n_p_abcd = new float**[num];
+  p_n_abcd = new float**[num];
+  n_q_abcd = new float**[num];
+  q_p_abcd = new float**[num];
+  for (int i = 0; i < num; i++) {
+    n_p_abcd[i] = new float*[num - 1];
+    p_n_abcd[i] = new float*[num - 1];
+    n_q_abcd[i] = new float*[num - 1];
+    q_p_abcd[i] = new float*[num - 1];
+    for (int j = 0; j < num; j++) {
+      n_p_abcd[i][j] = new float[4];
+      p_n_abcd[i][j] = new float[4];
+      n_q_abcd[i][j] = new float[4];
+      q_p_abcd[i][j] = new float[4];
+    }
+  }
   for (int i = 0; i < num; i++) {
     points[i] = new float[2]; //создание 2-х столбцов для xy
-    kk_abcd [i] = new float[4];
-    abcd[i] = new float[4];
-  }
 
+  }
 }
 
 void loop() {
 
- if (flag==1){
+  if (flag == 1) {
     int num =  sizeof(q) / sizeof(float) / (sizeof(q[0]) / sizeof(float));
 
     int nni =  sizeof(q) / sizeof(int) / (sizeof(q[0]) / sizeof(int));
     int nnj =  sizeof(q[0]) / sizeof(int);
 
+    // интерполяция P(Q)
+    for (int i = 0; i < nni; i++) {
+      for (int j = 0; j < nnj; j++) {
+        points[j][0] = q[i][j];
+        points[j][1] = p[i][j];
+      }
+      spline(points, nnj, q_p_abcd, i); //записывае и выводит в serial значения коэфициентов
+    }
+    Serial.println();
+
     // интерполяция P(N)
-    for (int i = 0; i < nni; i++) { //за i отвечает номер крцивой
+    for (int i = 0; i < nni; i++) {
       for (int j = 0; j < nnj; j++) {
         points[j][0] = n[i][j];
         points[j][1] = p[i][j];
       }
-      spline(points, nnj); //записывае и выводит в serial значения коэфициентов
-//      Serial.println(abcd[i][0]);
-      for (int s = 1; s < num; s++) {
-        n_p_abcd[i][s][0] = abcd[s][0];
-        n_p_abcd[i][s][1] = abcd[s][1];
-        n_p_abcd[i][s][2] = abcd[s][2];
-        n_p_abcd[i][s][3] = abcd[s][3];
-
-        Serial.print(n_p_abcd[i][s][0]);
-        Serial.print("  ");
-        Serial.print(n_p_abcd[i][s][1]);
-        Serial.print("  ");
-        Serial.print(n_p_abcd[i][s][2]);
-        Serial.print("  ");
-        Serial.print(n_p_abcd[i][s][3]);
-        Serial.print("  ");
-        Serial.println();
-      }
+      spline(points, nnj, n_p_abcd, i); //записывае и выводит в serial значения коэфициентов
     }
-    flag=0;
- }
+    Serial.println();
 
+    // интерполяция N(P)
+    for (int i = 0; i < nni; i++) {
+      for (int j = 0; j < nnj; j++) {
+        points[j][0] = p[i][j];
+        points[j][1] = n[i][j];
+      }
+      spline(points, nnj, p_n_abcd, i);  //записывае и выводит в serial значения коэфициентов
+    }
+    Serial.println();
+
+    // интерполяция Q(N)
+    for (int i = 0; i < nni; i++) {
+      for (int j = 0; j < nnj; j++) {
+        points[j][0] = n[i][j];
+        points[j][1] = q[i][j];
+      }
+      spline(points, nnj, n_q_abcd, i); //записывае и выводит в serial значения коэфициентов
+    }
+
+    Serial.println();
+    flag = 0;
+  }
 
   for (int k = 0; k < 4; k++) {
     for (int i = 1; i < 4; i++) {
       Serial.println();
       for (int j = 0; j < 4; j++) {
-        Serial.print(n_p_abcd[k][i][j]);
+        Serial.print(q_p_abcd[k][i][j]);
         Serial.print("  ");
+
       }
     }
     Serial.println();
   }
-  Serial.println();
-  Serial.println();
-  delay(1000);
-
+  delay(10000);
 }
 
-void spline(float **points, int num ) {
+
+
+
+void spline(float **points, int num, float ***k_abcd, int nl ) { // nl номер кривой из симейства кривых
   //int  N = sizeof(points)/sizeof(float)/2 - 1;
   //num=sizeof(points)/sizeof(float)/2;
   int  N = num - 1;
@@ -180,11 +188,10 @@ void spline(float **points, int num ) {
   }
 
   for (int i = 1; i < N + 1; i++ ) {
-    abcd[i][0] = a[i];
-    abcd[i][1] = b[i];
-    abcd[i][2] = c[i];
-    abcd[i][3] = d[i];
-
+    k_abcd[nl][i][0] = a[i];
+    k_abcd[nl][i][1] = b[i];
+    k_abcd[nl][i][2] = c[i];
+    k_abcd[nl][i][3] = d[i];
     Serial.print(a[i]);
     Serial.print("  ");
     Serial.print(b[i]);
@@ -194,9 +201,7 @@ void spline(float **points, int num ) {
     Serial.print(d[i]);
     Serial.print("  ");
     Serial.println();
-
   }
 
 
 }
-
