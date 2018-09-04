@@ -152,7 +152,10 @@ figure(q_p,q)
 #поиск статистического давления, указав кривую и условно считав обороты
 namber=3
 N=740
+
 P=find_points(namber,n,n_p,N)
+
+print(N,P)
 
 ax1.plot([P]*1200)
 print(P)

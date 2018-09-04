@@ -14,16 +14,12 @@ int n[4][4] = {{2675, 2350, 1905, 1550},
   {800, 770, 730, 685}
 };
 
-float ***n_p_abcd;
-float ***p_n_abcd;
-float ***n_q_abcd;
-float ***q_p_abcd;
+float ***abcd;
+
 
 float U[] = {7.5, 6.86, 4.58, 2.26};
 
 float **points;
-
-float pxy[][2] = {{1, 2}, {2, 4}, {3, 5}, {4, 7}, {5, 3}};
 
 int num;
 
@@ -46,11 +42,9 @@ void setup() {
   //int nn =  sizeof(n)/sizeof(int)/(sizeof(n[0])/sizeof(int));
   //Serial.println(nn);
 
-  int num =  sizeof(q) / sizeof(float) / (sizeof(q[0]) / sizeof(float));
+  int num = ( sizeof(q) / sizeof(float) )/( (sizeof(q[0]) / sizeof(float)));
   x = new float [num];
   y = new float [num];
-
-
 
   h = new float [num];
   l = new float [num];
@@ -64,23 +58,12 @@ void setup() {
   c[0] = 0;
   c[num] = 0;
 
-
-
   points = new float*[num];  // создание строк массива который будет параметром функции spline
-  n_p_abcd = new float**[num];
-  p_n_abcd = new float**[num];
-  n_q_abcd = new float**[num];
-  q_p_abcd = new float**[num];
+  abcd = new float**[num];
   for (int i = 0; i < num; i++) {
-    n_p_abcd[i] = new float*[num - 1];
-    p_n_abcd[i] = new float*[num - 1];
-    n_q_abcd[i] = new float*[num - 1];
-    q_p_abcd[i] = new float*[num - 1];
+    abcd[i] = new float*[num - 1];
     for (int j = 0; j < num; j++) {
-      n_p_abcd[i][j] = new float[4];
-      p_n_abcd[i][j] = new float[4];
-      n_q_abcd[i][j] = new float[4];
-      q_p_abcd[i][j] = new float[4];
+      abcd[i][j] = new float[4];
     }
   }
   for (int i = 0; i < num; i++) {
@@ -103,9 +86,11 @@ void loop() {
         points[j][0] = q[i][j];
         points[j][1] = p[i][j];
       }
-      spline(points, nnj, q_p_abcd, i); //записывае и выводит в serial значения коэфициентов
+      spline(points, nnj, abcd, i); //записывае и выводит в serial значения коэфициентов
     }
     Serial.println();
+
+    
 
     // интерполяция P(N)
     for (int i = 0; i < nni; i++) {
@@ -113,9 +98,16 @@ void loop() {
         points[j][0] = n[i][j];
         points[j][1] = p[i][j];
       }
-      spline(points, nnj, n_p_abcd, i); //записывае и выводит в serial значения коэфициентов
+      spline(points, nnj, abcd, i); //записывае и выводит в serial значения коэфициентов
     }
     Serial.println();
+
+    int _N=740;
+    int number=3;
+    
+    float P=find_points(number, n, _N );
+    Serial.println(_N);
+    Serial.println(P);
 
     // интерполяция N(P)
     for (int i = 0; i < nni; i++) {
@@ -123,7 +115,7 @@ void loop() {
         points[j][0] = p[i][j];
         points[j][1] = n[i][j];
       }
-      spline(points, nnj, p_n_abcd, i);  //записывае и выводит в serial значения коэфициентов
+      spline(points, nnj, abcd, i);  //записывае и выводит в serial значения коэфициентов
     }
     Serial.println();
 
@@ -133,24 +125,25 @@ void loop() {
         points[j][0] = n[i][j];
         points[j][1] = q[i][j];
       }
-      spline(points, nnj, n_q_abcd, i); //записывае и выводит в serial значения коэфициентов
+      spline(points, nnj, abcd, i); //записывае и выводит в serial значения коэфициентов
     }
 
     Serial.println();
     flag = 0;
   }
 
-  for (int k = 0; k < 4; k++) {
-    for (int i = 1; i < 4; i++) {
-      Serial.println();
-      for (int j = 0; j < 4; j++) {
-        Serial.print(q_p_abcd[k][i][j]);
-        Serial.print("  ");
-
-      }
-    }
-    Serial.println();
-  }
+//  for (int k = 0; k < 4; k++) {
+//    for (int i = 1; i < 4; i++) {
+//      Serial.println();
+//      for (int j = 0; j < 4; j++) {
+//        Serial.print(abcd[k][i][j]);
+//        Serial.print("  ");
+//
+//      }
+//    }
+//    Serial.println();
+//  }
+  
   delay(10000);
 }
 
@@ -202,6 +195,37 @@ void spline(float **points, int num, float ***k_abcd, int nl ) { // nl номе�
     Serial.print("  ");
     Serial.println();
   }
+}
 
 
+int diapazon(float N, int array[][4], int num_array) {
+  for (int i = 0; i < num_array; i++) {
+    if (N <= array[num_array][i] and N >= array[num_array][i + 1] or N >= array[num_array][i] and N <= array[num_array][i + 1]) {
+      return i + 1;
+    }
+  }
+}
+
+float find_points(int num_array,int array[][4], float N){
+    int k=diapazon(N,array,num_array);
+
+    float xi=array[num_array][k];
+
+    float ai=abcd[num_array][k][0];
+    float bi=abcd[num_array][k][1];
+    float ci=abcd[num_array][k][2];
+    float di=abcd[num_array][k][3];
+
+    Serial.print(ai);
+    Serial.print("  ");
+    Serial.print(bi);
+    Serial.print("  ");
+    Serial.print(ci);
+    Serial.print("  ");
+    Serial.print(di);
+    Serial.print("  ");
+    Serial.println();
+
+    float Y=ai+bi*(N-xi)+ci*pow((N-xi),2)+di*pow((N-xi),3);
+    return Y;
 }
