@@ -1,3 +1,6 @@
+#include <stdarg.h>
+
+
 int q[4][4] = {{430, 665, 930, 1155},
   {305, 510, 795, 1060},
   {255, 375, 610, 830},
@@ -42,7 +45,7 @@ void setup() {
   //int nn =  sizeof(n)/sizeof(int)/(sizeof(n[0])/sizeof(int));
   //Serial.println(nn);
 
-  int num = ( sizeof(q) / sizeof(float) )/( (sizeof(q[0]) / sizeof(float)));
+  int num = ( sizeof(q) / sizeof(float) ) / ( (sizeof(q[0]) / sizeof(float)));
   x = new float [num];
   y = new float [num];
 
@@ -90,7 +93,7 @@ void loop() {
     }
     Serial.println();
 
-    
+
 
     // интерполяция P(N)
     for (int i = 0; i < nni; i++) {
@@ -102,10 +105,11 @@ void loop() {
     }
     Serial.println();
 
-    int _N=740;
-    int number=3;
-    
-    float P=find_points(number, n, _N );
+    int _N = 740;
+    int number = 3;
+
+    float P = find_points(number, n, _N );
+
     Serial.println(_N);
     Serial.println(P);
 
@@ -118,6 +122,18 @@ void loop() {
       spline(points, nnj, abcd, i);  //записывае и выводит в serial значения коэфициентов
     }
     Serial.println();
+
+    //Находим N на каждой кривой, соответствующие выше найденному P, (4 -количество кривых)
+    for (int i = 0; i < 4; i++) {
+      if (p[i][0] >= P) {
+        int dia = diapazon(P, p, i);
+        
+        float NN = find_points(i, p, P );
+
+        Serial.println(NN);
+        Serial.println(P);
+      }
+    }
 
     // интерполяция Q(N)
     for (int i = 0; i < nni; i++) {
@@ -143,7 +159,7 @@ void loop() {
 //    }
 //    Serial.println();
 //  }
-  
+
   delay(10000);
 }
 
@@ -198,34 +214,38 @@ void spline(float **points, int num, float ***k_abcd, int nl ) { // nl номе�
 }
 
 
-int diapazon(float N, int array[][4], int num_array) {
-  for (int i = 0; i < num_array; i++) {
-    if (N <= array[num_array][i] and N >= array[num_array][i + 1] or N >= array[num_array][i] and N <= array[num_array][i + 1]) {
-      return i + 1;
+int diapazon(float N_val, int array[][4], int num_array) {
+  for (int k = 0; k < 4; k++) {
+    if (N_val <= array[num_array][k] and N_val >= array[num_array][k + 1] or N_val >= array[num_array][k] and N_val <= array[num_array][k + 1]) {
+
+      return k + 1;
     }
   }
 }
 
-float find_points(int num_array,int array[][4], float N){
-    int k=diapazon(N,array,num_array);
 
-    float xi=array[num_array][k];
+float find_points(int num_array, int array[][4], float N_val) {
+  int k = diapazon(N_val, array, num_array);
 
-    float ai=abcd[num_array][k][0];
-    float bi=abcd[num_array][k][1];
-    float ci=abcd[num_array][k][2];
-    float di=abcd[num_array][k][3];
 
-    Serial.print(ai);
-    Serial.print("  ");
-    Serial.print(bi);
-    Serial.print("  ");
-    Serial.print(ci);
-    Serial.print("  ");
-    Serial.print(di);
-    Serial.print("  ");
-    Serial.println();
+  float xi = array[num_array][k];
 
-    float Y=ai+bi*(N-xi)+ci*pow((N-xi),2)+di*pow((N-xi),3);
-    return Y;
+  float ai = abcd[num_array][k][0];
+  float bi = abcd[num_array][k][1];
+  float ci = abcd[num_array][k][2];
+  float di = abcd[num_array][k][3];
+
+  Serial.print(ai);
+  Serial.print("  ");
+  Serial.print(bi);
+  Serial.print("  ");
+  Serial.print(ci);
+  Serial.print("  ");
+  Serial.print(di);
+  Serial.print("  ");
+  Serial.println();
+
+
+  float Y = ai + bi * (N_val - xi) + ci * pow((N_val - xi), 2) + di * pow((N_val - xi), 3);
+  return Y;
 }
