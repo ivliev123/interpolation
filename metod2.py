@@ -202,6 +202,7 @@ for k in range(1,len(U_new)):
     bi=UQ[0][1][k]
     ci=UQ[0][2][k]
     di=UQ[0][3][k]
+    print(ai,bi,ci,di)
     #print(ai,bi,ci,di)
 
     #T=np.arange(xi_1,xi+0.1,0.1)

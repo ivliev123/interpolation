@@ -1,5 +1,3 @@
-#include <stdarg.h>
-
 
 int q[4][4] = {{430, 665, 930, 1155},
   {305, 510, 795, 1060},
@@ -20,7 +18,10 @@ int n[4][4] = {{2675, 2350, 1905, 1550},
 float ***abcd;
 
 
-float U[] = {7.5, 6.86, 4.58, 2.26};
+float U[] = {7.5, 6.86, 4.58, 2.26,0};
+float N_array[] = {0, 0, 0, 0};
+
+float Q_array[] = {0, 0, 0, 0, 0};
 
 float **points;
 
@@ -125,11 +126,10 @@ void loop() {
 
     //Находим N на каждой кривой, соответствующие выше найденному P, (4 -количество кривых)
     for (int i = 0; i < 4; i++) {
-      if (p[i][0] >= P) {
-        int dia = diapazon(P, p, i);
-        
-        float NN = find_points(i, p, P );
+      if (p[i][0] > P) {
 
+        float NN = find_points(i, p, P );
+        N_array[i] = NN;
         Serial.println(NN);
         Serial.println(P);
       }
@@ -143,22 +143,42 @@ void loop() {
       }
       spline(points, nnj, abcd, i); //записывае и выводит в serial значения коэфициентов
     }
-
     Serial.println();
+
+    for (int i = 0; i < 4; i++) { // 4 - количество точек N // нужно заменить (точек межет быть меньше)
+      float N_from = N_array[i];
+      float QQ = find_points(i, n, N_from);
+      Q_array[i]=QQ;
+      Serial.println(QQ);
+    }
+
+    // интерполяция Q(Uупр)
+    
+    nni =  sizeof(Q_array) / sizeof(float) ;
+    Serial.println(nni);
+    for (int i = 0; i < nni; i++) {
+        points[i][0] = U[i];
+        points[i][1] = Q_array[i];
+      }
+      spline(points, nni, abcd, 0); //записывае и выводит в serial значения коэфициентов
+    
+    Serial.println();
+
+
     flag = 0;
   }
 
-//  for (int k = 0; k < 4; k++) {
-//    for (int i = 1; i < 4; i++) {
-//      Serial.println();
-//      for (int j = 0; j < 4; j++) {
-//        Serial.print(abcd[k][i][j]);
-//        Serial.print("  ");
-//
-//      }
-//    }
-//    Serial.println();
-//  }
+  //  for (int k = 0; k < 4; k++) {
+  //    for (int i = 1; i < 4; i++) {
+  //      Serial.println();
+  //      for (int j = 0; j < 4; j++) {
+  //        Serial.print(abcd[k][i][j]);
+  //        Serial.print("  ");
+  //
+  //      }
+  //    }
+  //    Serial.println();
+  //  }
 
   delay(10000);
 }
@@ -234,17 +254,6 @@ float find_points(int num_array, int array[][4], float N_val) {
   float bi = abcd[num_array][k][1];
   float ci = abcd[num_array][k][2];
   float di = abcd[num_array][k][3];
-
-  Serial.print(ai);
-  Serial.print("  ");
-  Serial.print(bi);
-  Serial.print("  ");
-  Serial.print(ci);
-  Serial.print("  ");
-  Serial.print(di);
-  Serial.print("  ");
-  Serial.println();
-
 
   float Y = ai + bi * (N_val - xi) + ci * pow((N_val - xi), 2) + di * pow((N_val - xi), 3);
   return Y;
